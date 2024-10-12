@@ -4,7 +4,7 @@ type NestedStyleRule = StyleRule & {
   [selector: `${string}&${string}`]: NestedStyleRule
 }
 
-export type VariantDefinitions = Record<string, StyleRule>
+export type VariantDefinitions = Record<string, StyleRule | string>
 export type VariantGroups = Record<string, VariantDefinitions>
 
 type BooleanMap<T> = T extends 'true' | 'false' ? boolean : T

@@ -5,9 +5,9 @@
   "type": "module",
   "exports": {
     "./components": "./components/index.ts",
+    "./theme": "./theme.css.ts",
     "./styled": "./styled/index.ts",
-    "./styled/runtime": "./styled/runtime.tsx",
-    "./theme": "./theme.css.ts"
+    "./styled/runtime": "./styled/runtime.tsx"
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.16.0",

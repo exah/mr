@@ -10,6 +10,7 @@ type GetProps<T> = T extends keyof JSX.IntrinsicElements
 interface StyledComponentProps<T> {
   as?: T
   className?: string
+  children?: React.ReactNode
 }
 
 type GenericComponentProps<T, V extends VariantGroups, P = GetProps<T>> = P &
@@ -20,12 +21,11 @@ interface GenericComponent<P, V extends VariantGroups> {
   <T>(props: GenericComponentProps<T, V, P>): React.ReactNode
 }
 
-interface GenericForwardRefComponent<P, V extends VariantGroups>
+export interface StyledComponent<T, P, V extends VariantGroups>
   extends React.ExoticComponent<never>,
     GenericComponent<P, V> {
   toString: () => string
-  element: keyof JSX.IntrinsicElements
-  recipes: RecipeClassNames<VariantGroups>[]
+  config: RuntimeConfig<T, V>
 }
 
 function cx(input: (string | undefined)[]) {
@@ -59,7 +59,7 @@ interface RuntimeConfig<T, V extends VariantGroups> {
 
 export function runtime<T, V extends VariantGroups>(
   config: RuntimeConfig<T, V>
-): GenericForwardRefComponent<GetProps<T>, V>
+): StyledComponent<T, GetProps<T>, V>
 export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
   function Component(
     {
@@ -80,7 +80,6 @@ export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
   return Object.assign(forwardRef(Component), {
     toString: () => config.recipes.base,
     displayName: 'styled' + `(${config.element})`,
-    element: config.element,
-    recipes: [config.recipes],
+    config,
   })
 }
