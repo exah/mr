@@ -1,0 +1,28 @@
+{
+  "name": "mr",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "author": "John Grishin <r@exah.me>",
+  "license": "MIT",
+  "prettier": {
+    "printWidth": 90,
+    "semi": false,
+    "singleQuote": true,
+    "htmlWhitespaceSensitivity": "strict",
+    "trailingComma": "es5",
+    "bracketSameLine": false,
+    "arrowParens": "always"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.7.0"
+  }
+}

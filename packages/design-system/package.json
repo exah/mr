@@ -1,0 +1,18 @@
+{
+  "name": "design-system",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./components": "./components/index.ts",
+    "./styled": "./styled/index.ts",
+    "./styled/runtime": "./styled/runtime.tsx",
+    "./theme": "./theme.css.ts"
+  },
+  "dependencies": {
+    "@vanilla-extract/css": "^1.16.0",
+    "@vanilla-extract/recipes": "^0.5.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
