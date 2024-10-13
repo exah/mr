@@ -12,8 +12,8 @@ type GetProps<Component> = Component extends keyof JSX.IntrinsicElements
     ? Props
     : unknown
 
-interface GenericComponentProps<Component> {
-  as: Component
+interface GenericComponentProps<Component, Fallback = never> {
+  as: Component | Fallback
   className?: string
   children?: React.ReactNode
 }
@@ -23,20 +23,13 @@ type StyledComponentProps<
   Variants extends VariantGroups,
 > = GetProps<Component> &
   VariantSelection<Variants> &
-  GenericComponentProps<Component | keyof JSX.IntrinsicElements>
-
-interface GenericStyledComponent<Variants extends VariantGroups> {
-  <T>(props: StyledComponentProps<T, Variants>): React.ReactNode
-}
-
-interface GenericForwardRefComponent<Component, Variants extends VariantGroups>
-  extends React.ForwardRefExoticComponent<
-    Omit<StyledComponentProps<Component, Variants>, 'as'>
-  > {}
+  GenericComponentProps<Component, keyof JSX.IntrinsicElements>
 
 export interface StyledComponent<Component, Variants extends VariantGroups>
-  extends GenericForwardRefComponent<Component, Variants>,
-    GenericStyledComponent<Variants> {
+  extends React.ForwardRefExoticComponent<
+    Omit<StyledComponentProps<Component, Variants>, 'as'>
+  > {
+  <T>(props: StyledComponentProps<T, Variants>): React.ReactNode
   toString: () => string
   config: RuntimeConfig<Component, Variants>
 }

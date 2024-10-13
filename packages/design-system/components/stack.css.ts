@@ -5,9 +5,7 @@ import { Box } from './box.css'
 export const VStack = styled(Box, {
   display: 'grid',
   gridAutoFlow: 'row',
-  variants: {
-    ...gap,
-  },
+  variants: { ...gap },
 })
 
 export const HStack = styled(VStack, {
