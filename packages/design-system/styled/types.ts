@@ -7,26 +7,32 @@ type NestedStyleRule = StyleRule & {
 export type VariantDefinitions = Record<string, StyleRule | string>
 export type VariantGroups = Record<string, VariantDefinitions>
 
-type BooleanMap<T> = T extends 'true' | 'false' ? boolean : T
+type ExtractValue<T> = T extends 'true' | 'false'
+  ? boolean
+  : T extends string | number
+    ? T
+    : never
 
-type VariantsClassNames<Variants extends VariantGroups> = {
+export type VariantsClassNames<Variants extends VariantGroups> = {
   [P in keyof Variants]: {
     [PP in keyof Variants[P]]: string
   }
 }
 
-interface CompoundVariant<Variants extends VariantGroups> {
+export interface CompoundVariant<Variants extends VariantGroups> {
   variants: VariantSelection<Variants>
   style: StyleRule
 }
 
-export type RecipeClassNames<Variants extends VariantGroups> = {
+export interface RecipeClassNames<Variants extends VariantGroups> {
   base: string
   variants: VariantsClassNames<Variants>
 }
 
 export type VariantSelection<Variants extends VariantGroups> = {
-  [VariantGroup in keyof Variants]?: BooleanMap<keyof Variants[VariantGroup]> | undefined
+  [VariantGroup in keyof Variants]?:
+    | ExtractValue<keyof Variants[VariantGroup]>
+    | undefined
 }
 
 export type PatternOptions<Variants extends VariantGroups> = NestedStyleRule & {

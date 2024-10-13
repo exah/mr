@@ -3,10 +3,8 @@ import type { StyleRule } from '@vanilla-extract/css'
 import type { Space } from '../tokens'
 import { keys } from 'utils/array'
 
-interface SpaceStyles extends Record<Space, StyleRule> {}
-
 const createSpaceVariant = <P extends keyof StyleRule>(property: P) =>
-  keys(theme.space).reduce<Partial<SpaceStyles>>((acc, key) => {
+  keys(theme.space).reduce<Partial<Record<Space, StyleRule>>>((acc, key) => {
     acc[key] = { [property]: theme.space[key] }
     return acc
   }, {})

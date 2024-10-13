@@ -1,31 +1,44 @@
 import React, { forwardRef } from 'react'
-import type { RecipeClassNames, VariantGroups, VariantSelection } from './types'
+import type {
+  RecipeClassNames,
+  VariantGroups,
+  VariantSelection,
+  VariantsClassNames,
+} from './types'
 
-type GetProps<T> = T extends keyof JSX.IntrinsicElements
-  ? React.ComponentProps<T>
-  : T extends React.ComponentType<infer Props>
+type GetProps<Component> = Component extends keyof JSX.IntrinsicElements
+  ? React.ComponentProps<Component>
+  : Component extends React.ComponentType<infer Props>
     ? Props
     : unknown
 
-interface StyledComponentProps<T> {
-  as?: T
+interface GenericComponentProps<Component> {
+  as: Component
   className?: string
   children?: React.ReactNode
 }
 
-type GenericComponentProps<T, V extends VariantGroups, P = GetProps<T>> = P &
-  StyledComponentProps<T> &
-  VariantSelection<V>
+type StyledComponentProps<
+  Component,
+  Variants extends VariantGroups,
+> = GetProps<Component> &
+  VariantSelection<Variants> &
+  GenericComponentProps<Component | keyof JSX.IntrinsicElements>
 
-interface GenericComponent<P, V extends VariantGroups> {
-  <T>(props: GenericComponentProps<T, V, P>): React.ReactNode
+interface GenericStyledComponent<Variants extends VariantGroups> {
+  <T>(props: StyledComponentProps<T, Variants>): React.ReactNode
 }
 
-export interface StyledComponent<T, P, V extends VariantGroups>
-  extends React.ExoticComponent<never>,
-    GenericComponent<P, V> {
+interface GenericForwardRefComponent<Component, Variants extends VariantGroups>
+  extends React.ForwardRefExoticComponent<
+    Omit<StyledComponentProps<Component, Variants>, 'as'>
+  > {}
+
+export interface StyledComponent<Component, Variants extends VariantGroups>
+  extends GenericForwardRefComponent<Component, Variants>,
+    GenericStyledComponent<Variants> {
   toString: () => string
-  config: RuntimeConfig<T, V>
+  config: RuntimeConfig<Component, Variants>
 }
 
 function cx(input: (string | undefined)[]) {
@@ -36,38 +49,40 @@ function getRecipesClassName(
   props: VariantSelection<VariantGroups>,
   config: RuntimeConfig<unknown, VariantGroups>
 ) {
-  let result = config.recipes.base
+  let result = config.recipes.map((item) => item.base).join(' ')
+  const variants: VariantsClassNames<VariantGroups> = Object.assign(
+    {},
+    ...config.recipes.map((item) => item.variants)
+  )
 
-  for (const variant in config.recipes.variants) {
+  for (const variant in variants) {
     const value = props[variant] ?? config.default[variant]
 
     if (value === undefined) {
       continue
     }
 
-    result += ` ${config.recipes.variants[variant][value]}`
+    result += ` ${variants[variant][value]}`
   }
 
   return result
 }
 
-interface RuntimeConfig<T, V extends VariantGroups> {
+export interface RuntimeConfig<T, Variants extends VariantGroups> {
   element: T
-  recipes: RecipeClassNames<V>
-  default: VariantSelection<V>
+  recipes: RecipeClassNames<Variants>[]
+  default: VariantSelection<Variants>
 }
 
-export function runtime<T, V extends VariantGroups>(
-  config: RuntimeConfig<T, V>
-): StyledComponent<T, GetProps<T>, V>
+export function runtime<T, Variants extends VariantGroups>(
+  config: RuntimeConfig<T, Variants>
+): StyledComponent<T, Variants>
 export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
   function Component(
-    {
-      as: Comp = config.element,
-      ...rest
-    }: StyledComponentProps<'div'> & VariantSelection<VariantGroups>,
+    props: Partial<GenericComponentProps<'div'>> & VariantSelection<VariantGroups>,
     ref: React.ForwardedRef<HTMLDivElement>
   ) {
+    const { as: Comp = config.element, ...rest } = props
     return (
       <Comp
         ref={ref}
@@ -78,7 +93,7 @@ export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
   }
 
   return Object.assign(forwardRef(Component), {
-    toString: () => config.recipes.base,
+    toString: () => config.recipes[0].base,
     displayName: 'styled' + `(${config.element})`,
     config,
   })
