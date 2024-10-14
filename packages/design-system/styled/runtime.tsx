@@ -5,6 +5,7 @@ import type {
   VariantSelection,
   VariantsClassNames,
 } from './types'
+import { merge } from 'utils/helpers'
 import { cx } from 'utils/styles'
 
 export type Elements = keyof JSX.IntrinsicElements
@@ -39,16 +40,13 @@ export interface StyledComponent<Component, Variants extends VariantGroups>
 
 function getRecipesClassName(
   props: VariantSelection<VariantGroups>,
-  config: RuntimeConfig<unknown, VariantGroups>
+  variants: VariantsClassNames<VariantGroups>,
+  defaults: VariantSelection<VariantGroups>
 ) {
-  let result = config.recipes.map((item) => item.base).join(' ')
-  const variants: VariantsClassNames<VariantGroups> = Object.assign(
-    {},
-    ...config.recipes.map((item) => item.variants)
-  )
+  let result = ''
 
   for (const variant in variants) {
-    const value = props[variant] ?? config.default[variant]
+    const value = props[variant] ?? defaults[variant]
 
     if (value === undefined) {
       continue
@@ -70,6 +68,9 @@ export function runtime<T, Variants extends VariantGroups>(
   config: RuntimeConfig<T, Variants>
 ): StyledComponent<T, Variants>
 export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
+  const base = cx(config.recipes.map((item) => item.base))
+  const variants = merge(config.recipes.map((item) => item.variants))
+
   function Component(
     props: Partial<GenericComponentProps<'div'>> & VariantSelection<VariantGroups>,
     ref: React.ForwardedRef<HTMLDivElement>
@@ -79,13 +80,17 @@ export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
       <Comp
         ref={ref}
         {...rest}
-        className={cx([rest.className, getRecipesClassName(rest, config)])}
+        className={cx([
+          base,
+          getRecipesClassName(rest, variants, config.default),
+          rest.className,
+        ])}
       />
     )
   }
 
   return Object.assign(forwardRef(Component), {
-    toString: () => config.recipes[0].base,
+    toString: () => `.${config.recipes[0].base}`,
     displayName: 'Styled' + `(${config.element})`,
     config,
   })

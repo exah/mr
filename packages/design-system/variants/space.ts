@@ -1,5 +1,5 @@
 import type { StyleRule } from '@vanilla-extract/css'
-import { keys } from 'utils/array'
+import { keys } from 'utils/helpers'
 import { theme } from '../theme.css'
 import type { Theme } from '../theme.css'
 import type { Space } from '../tokens'
