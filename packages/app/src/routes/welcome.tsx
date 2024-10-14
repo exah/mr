@@ -1,5 +1,9 @@
-import { Box } from 'design-system/components'
+import { Stack, Text } from 'design-system/components'
 
 export function Welcome() {
-  return <Box>Welcome!</Box>
+  return (
+    <Stack gap={12} p={12}>
+      <Text font="system">Welcome!</Text>
+    </Stack>
+  )
 }

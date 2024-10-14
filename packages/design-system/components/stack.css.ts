@@ -1,13 +1,23 @@
 import { styled } from '../styled'
-import { gap } from '../variants'
-import { Box } from './box.css'
+import { Grid } from './grid.css'
 
-export const VStack = styled(Box, {
-  display: 'grid',
-  gridAutoFlow: 'row',
-  variants: { ...gap },
-})
-
-export const HStack = styled(VStack, {
-  gridAutoFlow: 'column',
+export const Stack = styled(Grid, {
+  gridAutoColumns: 'minmax(0, auto)',
+  gridAutoRows: 'minmax(0, auto)',
+  variants: {
+    orientation: {
+      vertical: { gridAutoFlow: 'row' },
+      horizontal: { gridAutoFlow: 'column', justifyContent: 'start' },
+    },
+    align: {
+      start: { justifyContent: 'start' },
+      center: { justifyContent: 'center' },
+      end: { justifyContent: 'end' },
+      justify: { justifyContent: 'space-between' },
+      stretch: { justifyContent: 'stretch' },
+    },
+  },
+  defaultVariants: {
+    orientation: 'vertical',
+  },
 })

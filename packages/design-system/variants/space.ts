@@ -1,11 +1,12 @@
-import { theme } from '../theme.css'
 import type { StyleRule } from '@vanilla-extract/css'
-import type { Space } from '../tokens'
 import { keys } from 'utils/array'
+import { theme } from '../theme.css'
+import type { Theme } from '../theme.css'
+import type { Space } from '../tokens'
 
 function createSpaceVariant<P extends keyof StyleRule>(
   property: P
-): Record<Space, { [key in P]: (typeof theme)['space'][Space] }>
+): Record<Space, { [key in P]: Theme['space'][Space] }>
 function createSpaceVariant(property: keyof StyleRule) {
   return keys(theme.space).reduce<Partial<Record<Space, StyleRule>>>((acc, key) => {
     acc[key] = { [property]: theme.space[key] }

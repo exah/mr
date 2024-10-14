@@ -2,12 +2,10 @@ import { addFunctionSerializer } from '@vanilla-extract/css/functionSerializer'
 import { recipe } from '@vanilla-extract/recipes'
 import { runtime } from './runtime'
 import type { VariantGroups, PatternOptions } from './types'
-import type { StyledComponent } from './runtime'
-
-type Elements = keyof JSX.IntrinsicElements
+import type { Elements, StyledComponent } from './runtime'
 
 export function styled<I, Variants extends VariantGroups>(
-  element: I | keyof JSX.IntrinsicElements,
+  element: I | Elements,
   options: PatternOptions<Variants>
 ): I extends StyledComponent<infer T, infer V>
   ? StyledComponent<T, V & Variants>

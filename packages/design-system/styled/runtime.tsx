@@ -5,25 +5,28 @@ import type {
   VariantSelection,
   VariantsClassNames,
 } from './types'
+import { cx } from 'utils/styles'
 
-type GetProps<Component> = Component extends keyof JSX.IntrinsicElements
+export type Elements = keyof JSX.IntrinsicElements
+
+export type GetProps<Component> = Component extends Elements
   ? React.ComponentProps<Component>
   : Component extends React.ComponentType<infer Props>
     ? Props
     : unknown
 
-interface GenericComponentProps<Component, Fallback = never> {
+export interface GenericComponentProps<Component, Fallback = never> {
   as: Component | Fallback
   className?: string
   children?: React.ReactNode
 }
 
-type StyledComponentProps<
+export type StyledComponentProps<
   Component,
   Variants extends VariantGroups,
 > = GetProps<Component> &
   VariantSelection<Variants> &
-  GenericComponentProps<Component, keyof JSX.IntrinsicElements>
+  GenericComponentProps<Component, Elements>
 
 export interface StyledComponent<Component, Variants extends VariantGroups>
   extends React.ForwardRefExoticComponent<
@@ -32,10 +35,6 @@ export interface StyledComponent<Component, Variants extends VariantGroups>
   <T>(props: StyledComponentProps<T, Variants>): React.ReactNode
   toString: () => string
   config: RuntimeConfig<Component, Variants>
-}
-
-function cx(input: (string | undefined)[]) {
-  return input.filter((item) => item !== undefined).join(' ')
 }
 
 function getRecipesClassName(
@@ -87,7 +86,7 @@ export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
 
   return Object.assign(forwardRef(Component), {
     toString: () => config.recipes[0].base,
-    displayName: 'styled' + `(${config.element})`,
+    displayName: 'Styled' + `(${config.element})`,
     config,
   })
 }

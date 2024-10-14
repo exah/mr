@@ -6,3 +6,5 @@ export const [themeClassName, theme] = createTheme({
   space,
   radii,
 })
+
+export type Theme = typeof theme

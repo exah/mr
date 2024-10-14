@@ -1,11 +1,18 @@
 import { Outlet } from 'react-router-dom'
-import { VStack } from 'design-system/components'
-import { themeClassName } from 'design-system/theme'
+import { Stack } from 'design-system/components'
+import { themeClassName, theme } from 'design-system/theme'
 
 export function Root() {
   return (
-    <VStack className={themeClassName}>
+    <Stack
+      className={themeClassName}
+      p={32}
+      style={{
+        backgroundColor: theme.colors['page-background'],
+        color: theme.colors['page-text'],
+      }}
+    >
       <Outlet />
-    </VStack>
+    </Stack>
   )
 }
