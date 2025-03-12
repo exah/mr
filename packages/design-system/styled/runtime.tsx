@@ -4,6 +4,7 @@ import type {
   VariantGroups,
   VariantSelection,
   VariantsClassNames,
+  ConditionGroups,
 } from './types'
 import { merge } from 'utils/helpers'
 import { cx } from 'utils/styles'
@@ -25,23 +26,27 @@ export interface GenericComponentProps<Component, Fallback = never> {
 export type StyledComponentProps<
   Component,
   Variants extends VariantGroups,
+  Conditions extends ConditionGroups,
 > = GetProps<Component> &
-  VariantSelection<Variants> &
+  VariantSelection<Variants, Conditions> &
   GenericComponentProps<Component, Elements>
 
-export interface StyledComponent<Component, Variants extends VariantGroups>
-  extends React.ForwardRefExoticComponent<
-    Omit<StyledComponentProps<Component, Variants>, 'as'>
+export interface StyledComponent<
+  Component,
+  Variants extends VariantGroups,
+  Conditions extends ConditionGroups,
+> extends React.ForwardRefExoticComponent<
+    Omit<StyledComponentProps<Component, Variants, Conditions>, 'as'>
   > {
-  <T>(props: StyledComponentProps<T, Variants>): React.ReactNode
+  <T>(props: StyledComponentProps<T, Variants, Conditions>): React.ReactNode
   toString: () => string
-  config: RuntimeConfig<Component, Variants>
+  config: RuntimeConfig<Component, Variants, Conditions>
 }
 
 function getRecipesClassName(
-  props: VariantSelection<VariantGroups>,
+  props: VariantSelection<VariantGroups, ConditionGroups>,
   variants: VariantsClassNames<VariantGroups>,
-  defaults: VariantSelection<VariantGroups>
+  defaults: VariantSelection<VariantGroups, ConditionGroups>
 ) {
   let result = ''
 
@@ -52,27 +57,41 @@ function getRecipesClassName(
       continue
     }
 
+    if (typeof value === 'object') {
+      // TODO
+      continue
+    }
+
     result += ` ${variants[variant][value]}`
   }
 
   return result
 }
 
-export interface RuntimeConfig<T, Variants extends VariantGroups> {
+export interface RuntimeConfig<
+  T,
+  Variants extends VariantGroups,
+  Conditions extends ConditionGroups,
+> {
   element: T
   recipes: RecipeClassNames<Variants>[]
-  default: VariantSelection<Variants>
+  default: VariantSelection<Variants, Conditions>
 }
 
-export function runtime<T, Variants extends VariantGroups>(
-  config: RuntimeConfig<T, Variants>
-): StyledComponent<T, Variants>
-export function runtime(config: RuntimeConfig<'div', VariantGroups>) {
+export function runtime<
+  T,
+  Variants extends VariantGroups,
+  Conditions extends ConditionGroups,
+>(
+  config: RuntimeConfig<T, Variants, Conditions>
+): StyledComponent<T, Variants, Conditions>
+export function runtime(config: RuntimeConfig<'div', VariantGroups, ConditionGroups>) {
   const base = cx(config.recipes.map((item) => item.base))
   const variants = merge(config.recipes.map((item) => item.variants))
 
   function Component(
-    props: Partial<GenericComponentProps<'div'>> & VariantSelection<VariantGroups>,
+    props: Partial<GenericComponentProps<'div'>> &
+      VariantSelection<VariantGroups, ConditionGroups>,
     ref: React.ForwardedRef<HTMLDivElement>
   ) {
     const { as: Comp = config.element, ...rest } = props
